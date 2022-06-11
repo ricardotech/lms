@@ -29,7 +29,8 @@ import { useWindowSize } from "../../../utils/useWindowSize";
 import { Context } from "../../../contexts/ContextProvider";
 
 export default function UserId() {
-  const { darkMode } = useContext(Context);
+
+  const [darkMode, setDarkMode] = useState(false);
 
   const router = useRouter();
   const { _id } = router.query;

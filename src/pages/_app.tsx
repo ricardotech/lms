@@ -12,25 +12,12 @@ import Loading from "../components/Loading";
 const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const { user, loading, darkMode } = useContext(Context);
+  const { user, loading } = useContext(Context);
 
   return (
     <ContextProvider>
       <QueryClientProvider client={queryClient}>
         <ChakraProvider theme={theme}>
-          {darkMode ? (
-            <style jsx global>{`
-              html {
-                background-color: #333;
-              }
-            `}</style>
-          ) : (
-            <style jsx global>{`
-              html {
-                background-color: #eee;
-              }
-            `}</style>
-          )}
           {user && loading && <Loading />}
           <Component {...pageProps} />
         </ChakraProvider>

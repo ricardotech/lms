@@ -12,7 +12,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { BiListPlus, BiLogOut, BiUserPlus } from "react-icons/bi";
 import { MdDarkMode } from "react-icons/md";
 import {
@@ -25,7 +25,9 @@ import {
 import { Context } from "../../contexts/ContextProvider";
 
 export default function TopNav() {
-  const { user, loading, signOut, darkMode, setDarkMode } = useContext(Context);
+  const { user, loading, signOut } = useContext(Context);
+
+  const [darkMode, setDarkMode] = useState(false);
 
   const isWideVersion = useBreakpointValue({
     base: false,

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   Text,
   Flex,
@@ -39,7 +39,9 @@ export default function NotFound() {
     lg: true,
   });
 
-  const { user, signOut, darkMode, setDarkMode, loading } = useContext(Context);
+  const { user, signOut, loading } = useContext(Context);
+
+  const [darkMode, setDarkMode] = useState(false);
 
   const toast = useToast();
   const router = useRouter();
