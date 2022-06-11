@@ -87,6 +87,18 @@ export default function Index() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    fetchInstructorCourses();
+  }, []);
+
+  const fetchInstructorCourses = async () => {
+    await api.get("/course/courses/instructor").then((res) => {
+      setCourses(res.data);
+    });
+  };
+
   const isWideVersion = useBreakpointValue({
     base: false,
     md: true,
@@ -134,6 +146,71 @@ export default function Index() {
     );
   }
 
+  function InstructorCourses() {
+    type CourseType = {
+      name: string;
+      slug: string;
+      image: {
+        ETag: string;
+        VersionId: string;
+        Location: string;
+      };
+      description: string;
+    };
+
+    function Course({ name, slug, image, description }: CourseType) {
+      return (
+        <Flex
+          flexDir="column"
+          mr="2"
+          borderRadius="5"
+          border="1px solid #eee"
+          style={{
+            width: 200,
+          }}
+        >
+          <Image
+            borderTopLeftRadius="5"
+            borderTopRightRadius="5"
+            src={image.Location}
+            style={{
+              width: 200,
+              height: 150,
+            }}
+          />
+          <Flex p="4">
+            <Text color="#333">{slug}</Text>
+            <Text color="#333">{description}</Text>
+          </Flex>
+        </Flex>
+      );
+    }
+
+    return (
+      <Flex
+        maxW={1000}
+        bg="#FFF"
+        flexDir="row"
+        display="grid"
+        gridGap="10px"
+        gridTemplateColumns="200px 200px"
+        py="4"
+      >
+        {courses &&
+          courses.map((course, i) => {
+            return (
+              <Course
+                name={course.name}
+                image={course.image}
+                slug={course.slug}
+                description={course.description}
+              />
+            );
+          })}
+      </Flex>
+    );
+  }
+
   if (!user) {
     return <Loading />;
   } else {
@@ -153,10 +230,13 @@ export default function Index() {
 
       <Header none={false} />
 
-      <Flex flexDir="column" w="100vw" h="100vh" bg="#fff" p="6">
+      <Flex flexDir="column" w="100vw" h="100vh" bg="#fff" px="6">
         <Flex flexDir="column" maxW={1000} mx="auto" w="100%">
+          
+        <InstructorCourses />
+
           <Text color="#31343A" fontWeight="bold" fontSize={["2xl", "3xl"]}>
-            Por onde gostaria de começar?
+            Ações rápidas
           </Text>
           <StarterOptions />
         </Flex>

@@ -87,7 +87,7 @@ export default function Index() {
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [price, setPrice] = useState<string>();
-  const [paid, setPaid] = useState<boolean>();
+  const [paid, setPaid] = useState<boolean>(false);
   const [model, setModel] = useState<"recurrent" | "lifetime">("recurrent");
   const [category, setCategory] = useState<string>("");
 
@@ -125,38 +125,98 @@ export default function Index() {
   const toast = useToast();
 
   const handleCreateImage = (e) => {
-    let file = e.target.files[0];
-    setPreview(window.URL.createObjectURL(e.target.files[0]));
-    setUploadButtonText(file.name);
-    setValues({ ...values, courseLoading: true });
+    if (e.target.files.length !== 0) {
+      let file = e.target.files[0];
+      setPreview(window.URL.createObjectURL(e.target.files[0]));
+      setUploadButtonText(file.name);
+      setValues({ ...values, courseLoading: true });
 
-    Resizer.imageFileResizer(file, 720, 500, "JPEG", 100, 0, async (uri) => {
-      try {
-        const data = await api.post("/course/upload-image", {
-          image: uri,
-        });
+      Resizer.imageFileResizer(file, 720, 500, "JPEG", 100, 0, async (uri) => {
+        try {
+          const data = await api.post("/course/upload-image", {
+            image: uri,
+          });
 
-        console.log("IMAGE UPLOADED", data);
-
-        setValues({ ...values, courseLoading: false });
-      } catch (err) {
-        console.log(err);
-        setValues({ ...values, courseLoading: false });
-        toast({
-          status: "error",
-          description: "Image upload failed. Try later.",
-          duration: 1000,
-        });
-      }
-    });
+          setImage(data.data);
+          setValues({ ...values, courseLoading: false });
+        } catch (err) {
+          console.log(err);
+          setValues({ ...values, courseLoading: false });
+          toast({
+            status: "error",
+            description: "Image upload failed. Try later.",
+            duration: 1000,
+          });
+        }
+      });
+    }
   };
 
-  const handleDeleteImage = (e) => {
-    toast({
-      description: "delete image",
-      status: "error"
-    })
-  }
+  const handleDeleteImage = async () => {
+    try {
+      if (image) {
+        setValues({ ...values, courseLoading: true });
+        const res = await api.post("/course/delete-image", { image });
+        toast({
+          position: "top",
+          status: "success",
+          description: "Imagem removida com sucesso",
+        });
+        setImage(null);
+        setPreview(null);
+        setUploadButtonText("Upload Image");
+        setValues({ ...values, courseLoading: false });
+      } else {
+        toast({
+          position: "top",
+          status: "error",
+          description: "Tente novamente em alguns instantes",
+        });
+      }
+    } catch (err) {
+      toast({
+        position: "top",
+        status: "error",
+        description: "erro",
+      });
+      console.log(err);
+      setValues({ ...values, courseLoading: false });
+    }
+  };
+
+  const handleCreateCourse = async (e) => {
+    const res = await api.post("/course/create", {
+      name,
+      description,
+      price: paid ? Number(price.split(" ")[1]) : 0,
+      paid,
+      category,
+      image,
+    });
+    if (res.data.message === "Curso criado com sucesso!") {
+      toast({
+        status: "success",
+        description: res.data.message,
+      });
+      setTimeout(() => {
+        router.push("/admin");
+      }, 500);
+    } else if (
+      res.data.message === "Infelizmente já existe um curso com esse nome"
+    ) {
+      toast({
+        position: "top",
+        status: "error",
+        description: res.data.message,
+      });
+    } else {
+      toast({
+        position: "top",
+        status: "error",
+        description: "Tente novamente mais tarde",
+      });
+    }
+  };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -177,19 +237,6 @@ export default function Index() {
       return <Loading />;
     }
   }
-
-  const handleCreateCourse = async () => {
-    try {
-      api.post("/course").then((res) => {
-        alert(JSON.stringify(res.data));
-      });
-    } catch (err) {
-      toast({
-        description: "Tente novamente mais tarde",
-        status: "error",
-      });
-    }
-  };
 
   const Category = ({ title }) => {
     return (
@@ -384,7 +431,7 @@ export default function Index() {
                   <Flex align="center" w="100%" justify="space-between">
                     {preview && (
                       <Text
-                        onClick={() => setPreview(undefined)}
+                        onClick={handleDeleteImage}
                         cursor="pointer"
                         textDecorationLine="underline"
                         color="#333"
@@ -924,6 +971,8 @@ export default function Index() {
                           </Text>
                         </Flex>
                         <Flex
+                          cursor="pointer"
+                          onClick={handleCreateCourse}
                           mt="4"
                           bg="#f00066"
                           borderRadius="5"
@@ -1343,6 +1392,7 @@ export default function Index() {
                           </Text>
                         </Flex>
                         <Flex
+                          onClick={handleCreateCourse}
                           cursor="pointer"
                           _hover={{
                             backgroundColor: "#FFF",
