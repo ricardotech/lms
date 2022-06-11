@@ -948,13 +948,7 @@ export default function Index() {
                             color="#333"
                             fontWeight="bold"
                           >
-                            asdfjkhasdjkfhasjkdf asldfjhsadjkfh askdjfhskjdfh
-                            asdfjkhasdjkfhasjkdf asldfjhsadjkfh askdjfhskjdfh
-                            asdfjkhasdjkfhasjkdf asldfjhsadjkfh askdjfhskjdfh
-                            asdfjkhasdjkfhasjkdf asldfjhsadjkfh askdjfhskjdfh
-                            asdfjkhasdjkfhasjkdf asldfjhsadjkfh askdjfhskjdfh
-                            asdfjkhasdjkfhasjkdf asldfjhsadjkfh askdjfhskjdfh
-                            asdfjkhasdjkfhasjkdf
+                            {description}
                           </Text>
                           <Text mt="4" fontSize="md" color="#333">
                             Ao confirmar você confirma que leu e concorda com

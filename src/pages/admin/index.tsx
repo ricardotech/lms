@@ -34,6 +34,7 @@ import {
   useToast,
   Checkbox,
   Image,
+  Tooltip,
 } from "@chakra-ui/react";
 import ReactPlayer from "react-player";
 import React, { useContext, useEffect, useReducer, useState } from "react";
@@ -51,6 +52,7 @@ import {
   RiAddBoxFill,
   RiCloseLine,
   RiDiscordFill,
+  RiEyeLine,
   RiGithubFill,
   RiInstagramFill,
   RiLinkedinBoxFill,
@@ -64,7 +66,7 @@ import Head from "next/head";
 import { Html, Main, NextScript } from "next/document";
 import Loading from "../../components/Loading";
 import { useWindowSize } from "../../utils/useWindowSize";
-import { BiImageAdd } from "react-icons/bi";
+import { BiEditAlt, BiImageAdd, BiTrashAlt } from "react-icons/bi";
 
 export default function Index() {
   const { user, signOut, loading } = useContext(Context);
@@ -85,6 +87,8 @@ export default function Index() {
     setPreview(window.URL.createObjectURL(e.target.files[0]));
   };
 
+  const toast = useToast();
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [courses, setCourses] = useState([]);
@@ -97,6 +101,32 @@ export default function Index() {
     await api.get("/course/courses/instructor").then((res) => {
       setCourses(res.data);
     });
+  };
+
+  const handleDeleteCourse = async (id) => {
+    try {
+      const res = await api.delete(`/course/${id}`);
+      if (res.data.message === "Curso deletado com sucesso!") {
+        toast({
+          duration: 2000,
+          status: "success",
+          description: "Curso deletado com sucesso",
+        });
+        fetchInstructorCourses();
+      } else {
+        toast({
+          duration: 2000,
+          status: "error",
+          description: "Tente novamente em alguns instantes.",
+        });
+      }
+    } catch (err) {
+      toast({
+        duration: 2000,
+        status: "error",
+        description: "Tente novamente em alguns instantes.",
+      });
+    }
   };
 
   const isWideVersion = useBreakpointValue({
@@ -141,13 +171,18 @@ export default function Index() {
         flexDir={isWideVersion ? "row" : "column"}
         justify={isWideVersion ? "space-between" : "center"}
       >
-        <Option title="Criar seu primeiro curso" />
+        <Option
+          title={
+            courses.length > 0 ? "Criar novo curso" : "Criar seu primeiro curso"
+          }
+        />
       </Flex>
     );
   }
 
   function InstructorCourses() {
     type CourseType = {
+      id: string;
       name: string;
       slug: string;
       image: {
@@ -158,7 +193,7 @@ export default function Index() {
       description: string;
     };
 
-    function Course({ name, slug, image, description }: CourseType) {
+    function Course({ id, name, slug, image, description }: CourseType) {
       return (
         <Flex
           flexDir="column"
@@ -169,6 +204,79 @@ export default function Index() {
             width: 200,
           }}
         >
+          <Flex position="absolute" w={180} justify="flex-end" mt="2" ml="2">
+            <Tooltip
+              bg="#FFF"
+              color="#333"
+              borderRadius="5"
+              py="2"
+              border="1px solid #eee"
+              label="Excluir"
+            >
+              <Flex
+                onClick={() => handleDeleteCourse(id)}
+                ml="2"
+                bg="#FFF"
+                cursor="pointer"
+                borderRadius="full"
+                justify="center"
+                align="center"
+                style={{
+                  height: 25,
+                  width: 25,
+                }}
+              >
+                <Icon as={BiTrashAlt} color="#333" fontSize="10" />
+              </Flex>
+            </Tooltip>
+            <Tooltip
+              bg="#FFF"
+              color="#333"
+              borderRadius="5"
+              py="2"
+              border="1px solid #eee"
+              label="Editar"
+            >
+              <Flex
+                ml="2"
+                bg="#FFF"
+                cursor="pointer"
+                borderRadius="full"
+                justify="center"
+                align="center"
+                style={{
+                  height: 25,
+                  width: 25,
+                }}
+              >
+                <Icon as={BiEditAlt} color="#333" fontSize="10" />
+              </Flex>
+            </Tooltip>
+            <Tooltip
+              bg="#FFF"
+              color="#333"
+              borderRadius="5"
+              py="2"
+              border="1px solid #eee"
+              label="Visualizar"
+            >
+              <Flex
+                onClick={() => router.push(`/content/course/${id}`)}
+                ml="2"
+                bg="#FFF"
+                cursor="pointer"
+                borderRadius="full"
+                justify="center"
+                align="center"
+                style={{
+                  height: 25,
+                  width: 25,
+                }}
+              >
+                <Icon as={RiEyeLine} color="#333" fontSize="10" />
+              </Flex>
+            </Tooltip>
+          </Flex>
           <Image
             borderTopLeftRadius="5"
             borderTopRightRadius="5"
@@ -178,9 +286,8 @@ export default function Index() {
               height: 150,
             }}
           />
-          <Flex p="4">
-            <Text color="#333">{slug}</Text>
-            <Text color="#333">{description}</Text>
+          <Flex p="4" justify="space-between" align="center">
+            <Text color="#333">{name}</Text>
           </Flex>
         </Flex>
       );
@@ -200,6 +307,7 @@ export default function Index() {
           courses.map((course, i) => {
             return (
               <Course
+                id={course._id}
                 name={course.name}
                 image={course.image}
                 slug={course.slug}
@@ -232,8 +340,7 @@ export default function Index() {
 
       <Flex flexDir="column" w="100vw" h="100vh" bg="#fff" px="6">
         <Flex flexDir="column" maxW={1000} mx="auto" w="100%">
-          
-        <InstructorCourses />
+          <InstructorCourses />
 
           <Text color="#31343A" fontWeight="bold" fontSize={["2xl", "3xl"]}>
             Ações rápidas
