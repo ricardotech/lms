@@ -23,6 +23,12 @@ import {
   DrawerHeader,
   useDisclosure,
   DrawerOverlay,
+  Stat,
+  StatLabel,
+  StatNumber,
+  StatHelpText,
+  StatArrow,
+  StatGroup,
   DrawerContent,
   DrawerCloseButton,
   SimpleGrid,
@@ -33,6 +39,12 @@ import {
   useEditableState,
   useToast,
   Checkbox,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
   Image,
   Tooltip,
 } from "@chakra-ui/react";
@@ -66,10 +78,15 @@ import Head from "next/head";
 import { Html, Main, NextScript } from "next/document";
 import Loading from "../../components/Loading";
 import { useWindowSize } from "../../utils/useWindowSize";
-import { BiEditAlt, BiImageAdd, BiTrashAlt } from "react-icons/bi";
+import {
+  BiChevronDown,
+  BiEditAlt,
+  BiImageAdd,
+  BiTrashAlt,
+} from "react-icons/bi";
 
 export default function Index() {
-  const { user, signOut, loading } = useContext(Context);
+  const { user, signOut, loading, setLoading } = useContext(Context);
 
   const [playing, setPlaying] = useState(true);
 
@@ -83,6 +100,12 @@ export default function Index() {
 
   const [preview, setPreview] = useState(undefined);
 
+  const [deleting, setDeleting] = useState({
+    id: "",
+    name: "",
+    isOpen: false,
+  });
+
   const handleImage = (e) => {
     setPreview(window.URL.createObjectURL(e.target.files[0]));
   };
@@ -90,6 +113,7 @@ export default function Index() {
   const toast = useToast();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = React.useRef();
 
   const [courses, setCourses] = useState([]);
 
@@ -98,8 +122,10 @@ export default function Index() {
   }, []);
 
   const fetchInstructorCourses = async () => {
+    setLoading(true);
     await api.get("/course/courses/instructor").then((res) => {
       setCourses(res.data);
+      setLoading(false);
     });
   };
 
@@ -112,7 +138,13 @@ export default function Index() {
           status: "success",
           description: "Curso deletado com sucesso",
         });
-        fetchInstructorCourses();
+        fetchInstructorCourses().then(() => {
+          setDeleting({
+            id: "",
+            name: "",
+            isOpen: false,
+          });
+        });
       } else {
         toast({
           duration: 2000,
@@ -138,30 +170,45 @@ export default function Index() {
   function StarterOptions() {
     function Option({ title }) {
       return (
-        <Flex
-          _hover={{
-            boxShadow: "rgba(0,0,0,0.1) 0 0 10px",
-          }}
-          onClick={() => {
-            if (title === "Criar seu primeiro curso") {
-              router.push("/create/course");
-            }
-          }}
+        <Tooltip
+          bg="#FFF"
+          color="#333"
           borderRadius="5"
-          cursor="pointer"
-          style={{
-            minWidth: 270,
-            width: isWideVersion ? "30%" : null,
-          }}
-          mb={isWideVersion ? null : "4"}
-          bg="#fff"
-          boxShadow="rgba(0,0,0,0.1) 0 0 5px"
-          p="6"
-          align="center"
+          label={
+            title === "Criar seu primeiro curso"
+              ? "Clique para criar seu primeiro curso"
+              : title === "Criar novo curso"
+              ? "Clique para criar um novo curso"
+              : null
+          }
         >
-          <Icon as={RiAddBoxFill} mr="6" color="green.500" fontSize="xl" />
-          <Text color="#333">{title}</Text>
-        </Flex>
+          <Flex
+            _hover={{
+              boxShadow: "rgba(0,0,0,0.1) 0 0 10px",
+            }}
+            onClick={() => {
+              if (
+                title === "Criar seu primeiro curso" ||
+                title === "Criar novo curso"
+              ) {
+                router.push("/create/course");
+              }
+            }}
+            borderRadius="5"
+            cursor="pointer"
+            style={{
+              minWidth: 270,
+              width: isWideVersion ? "30%" : null,
+            }}
+            mb={isWideVersion ? null : "4"}
+            p="6"
+            bg="#FFF"
+            align="center"
+          >
+            <Icon as={RiAddBoxFill} mr="6" color="green.500" fontSize="xl" />
+            <Text color="#333">{title}</Text>
+          </Flex>
+        </Tooltip>
       );
     }
 
@@ -176,6 +223,66 @@ export default function Index() {
             courses.length > 0 ? "Criar novo curso" : "Criar seu primeiro curso"
           }
         />
+      </Flex>
+    );
+  }
+
+  function InstructorReports() {
+    type ReportType = {
+      title: string;
+      subtitle?: string;
+      value: number;
+      icon?: string;
+      last?: boolean;
+    };
+
+    function Report({
+      title,
+      subtitle,
+      value,
+      icon,
+      last = false,
+    }: ReportType) {
+      return (
+        <Tooltip bg="#FFF" color="#333" borderRadius="5" label={title}>
+          <Flex
+            _hover={{
+              boxShadow: "rgba(0,0,0,0.1) 0 0 10px",
+            }}
+            w="100%"
+            cursor="pointer"
+            mr={!last && "4"}
+            flexDir="column"
+            borderRadius="5"
+            mt="4"
+            p="2"
+            bg="#FFF"
+          >
+            <Stat p="2">
+              <StatLabel mt="2" color="#333" fontSize={["md", "lg", "xl"]}>
+                {title}
+              </StatLabel>
+              <StatNumber color="#000" fontSize={["2xl", "3xl", "4xl"]}>
+                {value}
+              </StatNumber>
+              <StatHelpText fontSize="lg" color="#444">
+                <StatArrow type={value > 0 ? "increase" : "decrease"} />
+                {
+                  // compare data in the last week and make a percentage relation between
+                  // this week / last week
+                }
+                {value * 100}%
+              </StatHelpText>
+            </Stat>
+          </Flex>
+        </Tooltip>
+      );
+    }
+
+    return (
+      <Flex w="100%" flexDir={size.width < 500 ? "column" : "row"}>
+        <Report title="Novos assinantes" subtitle="eai" value={1} />
+        <Report title="Visitas no seu perfil" subtitle="vai" value={2} last />
       </Flex>
     );
   }
@@ -196,112 +303,45 @@ export default function Index() {
     function Course({ id, name, slug, image, description }: CourseType) {
       return (
         <Flex
+          onClick={() => router.push(`/course/${slug}`)}
+          _hover={{
+            boxShadow: "rgba(0,0,0,0.1) 0 0 10px",
+          }}
+          cursor="pointer"
           flexDir="column"
           mr="2"
           borderRadius="5"
+          bg="#FFF"
           border="1px solid #eee"
           style={{
-            width: 200,
+            width: "100%",
           }}
         >
-          <Flex position="absolute" w={180} justify="flex-end" mt="2" ml="2">
-            <Tooltip
-              bg="#FFF"
-              color="#333"
-              borderRadius="5"
-              py="2"
-              border="1px solid #eee"
-              label="Excluir"
-            >
-              <Flex
-                onClick={() => handleDeleteCourse(id)}
-                ml="2"
-                bg="#FFF"
-                cursor="pointer"
-                borderRadius="full"
-                justify="center"
-                align="center"
-                style={{
-                  height: 25,
-                  width: 25,
-                }}
-              >
-                <Icon as={BiTrashAlt} color="#333" fontSize="10" />
-              </Flex>
-            </Tooltip>
-            <Tooltip
-              bg="#FFF"
-              color="#333"
-              borderRadius="5"
-              py="2"
-              border="1px solid #eee"
-              label="Editar"
-            >
-              <Flex
-                ml="2"
-                bg="#FFF"
-                cursor="pointer"
-                borderRadius="full"
-                justify="center"
-                align="center"
-                style={{
-                  height: 25,
-                  width: 25,
-                }}
-              >
-                <Icon as={BiEditAlt} color="#333" fontSize="10" />
-              </Flex>
-            </Tooltip>
-            <Tooltip
-              bg="#FFF"
-              color="#333"
-              borderRadius="5"
-              py="2"
-              border="1px solid #eee"
-              label="Visualizar"
-            >
-              <Flex
-                onClick={() => router.push(`/content/course/${id}`)}
-                ml="2"
-                bg="#FFF"
-                cursor="pointer"
-                borderRadius="full"
-                justify="center"
-                align="center"
-                style={{
-                  height: 25,
-                  width: 25,
-                }}
-              >
-                <Icon as={RiEyeLine} color="#333" fontSize="10" />
-              </Flex>
-            </Tooltip>
-          </Flex>
           <Image
             borderTopLeftRadius="5"
             borderTopRightRadius="5"
             src={image.Location}
             style={{
-              width: 200,
-              height: 150,
+              width: "100%",
+              height: size.width < 800 ? 200 : size.width < 1000 ? 300 : 400,
             }}
           />
-          <Flex p="4" justify="space-between" align="center">
-            <Text color="#333">{name}</Text>
+          <Flex p="4" flexDir="column" justify="space-between">
+            <Text fontWeight="medium" color="#333">
+              {name}
+            </Text>
           </Flex>
         </Flex>
       );
     }
 
     return (
-      <Flex
+      <SimpleGrid
+        columns={size.width < 500 ? 1 : 2}
+        gridGap="4"
         maxW={1000}
-        bg="#FFF"
         flexDir="row"
-        display="grid"
-        gridGap="10px"
-        gridTemplateColumns="200px 200px"
-        py="4"
+        my="4"
       >
         {courses &&
           courses.map((course, i) => {
@@ -315,7 +355,7 @@ export default function Index() {
               />
             );
           })}
-      </Flex>
+      </SimpleGrid>
     );
   }
 
@@ -338,16 +378,116 @@ export default function Index() {
 
       <Header none={false} />
 
-      <Flex flexDir="column" w="100vw" h="100vh" bg="#fff" px="6">
+      <Flex flexDir="column" w="100vw" px="6" py="4">
         <Flex flexDir="column" maxW={1000} mx="auto" w="100%">
-          <InstructorCourses />
+          <Flex w="100%" justify="space-between" align="center">
+            <Text color="#31343A" fontWeight="bold" fontSize={["xl", "2xl"]}>
+              Seus relatórios
+            </Text>
+            <Tooltip
+              bg="#FFF"
+              color="#333"
+              borderRadius="5"
+              label="Clique para mudar a data de seus relatórios"
+            >
+              <Flex
+                _hover={{
+                  boxShadow: "rgba(0,0,0,0.1) 0 0 10px",
+                }}
+                cursor="pointer"
+                borderRadius="5"
+                justify="center"
+                align="center"
+                px="3"
+                py="2"
+                bg="#FFF"
+              >
+                <Text color="#333">7 dias</Text>
+                <Icon as={BiChevronDown} ml="2" fontSize="sm" color="#333" />
+              </Flex>
+            </Tooltip>
+          </Flex>
+          <InstructorReports />
 
-          <Text color="#31343A" fontWeight="bold" fontSize={["2xl", "3xl"]}>
+          <Text
+            mt="8"
+            color="#31343A"
+            fontWeight="bold"
+            fontSize={["xl", "2xl"]}
+          >
             Ações rápidas
           </Text>
           <StarterOptions />
+
+          <Text
+            mt="8"
+            color="#31343A"
+            fontWeight="bold"
+            fontSize={["xl", "2xl"]}
+          >
+            Seus cursos
+          </Text>
+          <InstructorCourses />
         </Flex>
       </Flex>
+
+      {
+        // delete alert
+      }
+      <AlertDialog
+        isOpen={deleting.isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={() =>
+          setDeleting({
+            id: "",
+            name: "",
+            isOpen: false,
+          })
+        }
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader color="#333" fontSize="md" fontWeight="normal">
+              Você está prestes a excluir o curso
+              <Text fontWeight="bold" fontSize="xl">
+                {deleting.name}
+              </Text>
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              <Text color="#333" fontSize="sm" mb="4">
+                Você tem certeza que deseja excluir o curso {deleting.name}?
+              </Text>
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button
+                _hover={{
+                  backgroundColor: "#444",
+                }}
+                bg="#333"
+                ref={cancelRef}
+                onClick={() =>
+                  setDeleting({
+                    id: "",
+                    name: "",
+                    isOpen: false,
+                  })
+                }
+              >
+                Cancelar
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={() => handleDeleteCourse(deleting.id)}
+                ml="2"
+              >
+                Excluir
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </>
   );
 }

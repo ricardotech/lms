@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Flex,
   Icon,
   Image,
@@ -45,14 +46,14 @@ export default function Header({ none = false }) {
           h="calc(100vh - 80px)"
           style={{ marginTop: 80 }}
           w="100vw"
-          bg="#FFF"
+          bg="#eee"
         ></Flex>
       )}
       <Flex
         align="center"
-        borderBottom="1px solid #f0f0f0"
+        borderBottom="1px solid #e7e7e7"
         p="4"
-        bg="#FFF"
+        bg="#eee"
         w="100vw"
         style={{ height: 80 }}
       >
@@ -63,34 +64,50 @@ export default function Header({ none = false }) {
               onClick={() => {
                 router.push("/");
               }}
-              borderRadius="full"
-              src="http://localhost:5556/images/inconformedia.png"
-              w="45"
-              h="45"
+              borderRadius="5"
+              src="/logo.png"
+              w="42"
+              h="42"
               mr="2"
             />
-          </Flex>
-          {!none && (
-            <Flex display={none ? "none" : null} align="center">
-              <Link href={user && user._id ? "/admin" : "/auth/signup"}>
-                <Flex
-                  onClick={() => signOut()}
-                  cursor="pointer"
-                  bg="#F00066"
-                  px="4"
-                  py="2"
-                  ml="4"
-                  borderRadius="5"
-                  justify="center"
-                  align="center"
-                >
-                  <Text color="#FFF" fontSize="14" fontWeight="bold">
-                    Sair da sua conta
-                  </Text>
-                </Flex>
-              </Link>
+            <Flex flexDir="column">
+              <Text fontSize="lg" color="#F00066" fontWeight="bold">
+                Oraculu
+              </Text>
+              <Text fontSize="xs" color="#F00066">
+                Learning Management System
+              </Text>
             </Flex>
-          )}
+          </Flex>
+
+          <Menu>
+            <MenuButton>
+              {!none && (
+                <Avatar
+                  style={{
+                    width: 45,
+                    height: 45,
+                  }}
+                  name={user ? user.name : "Usuário"}
+                />
+              )}
+            </MenuButton>
+            <MenuList
+              bg="#FEFEFE"
+              border="1px solid #eee"
+              boxShadow="rgba(0,0,0,0.1) 0 0 10px"
+            >
+              <Flex justify="center" align="center" px="4" py="6">
+                <Avatar
+                  style={{
+                    width: 45,
+                    height: 45,
+                  }}
+                  name={user ? user.name : "Usuário"}
+                />
+              </Flex>
+            </MenuList>
+          </Menu>
         </Flex>
       </Flex>
     </>

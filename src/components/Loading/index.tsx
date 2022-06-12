@@ -16,6 +16,7 @@ import {
   RiLinkedinFill,
 } from "react-icons/ri";
 import { Context } from "../../contexts/ContextProvider";
+import Header from "../Header";
 import TopNav from "../TopNav";
 
 type LoadingProps = {
@@ -32,31 +33,6 @@ export default function Loading({ title }: LoadingProps) {
   });
 
   const toast = useToast();
-
-  function Header({ none }) {
-    return (
-      <Flex
-        align="center"
-        boxShadow="rgba(0,0,0,0.1) 0 0 10px"
-        p="4"
-        bg={!none && "#333"}
-        w="100vw"
-        style={{ height: 80 }}
-      >
-        <Flex justify="space-between" align="center" w="100%">
-          <Flex align="center">
-            <Image
-              borderRadius="full"
-              src="http://localhost:5556/images/inconformedia.png"
-              w="45"
-              h="45"
-              mr="2"
-            />
-          </Flex>
-        </Flex>
-      </Flex>
-    );
-  }
 
   function Footer() {
     return (

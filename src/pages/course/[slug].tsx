@@ -19,27 +19,29 @@ import {
 } from "@chakra-ui/react";
 import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Header from "../../../components/Header";
-import { api } from "../../../services/apiClient";
+import Header from "../../components/Header";
+import { api } from "../../services/apiClient";
 import { string } from "yup";
-import TopNav from "../../../components/TopNav";
+import TopNav from "../../components/TopNav";
 import { RiDeleteBin4Line, RiEditLine, RiShareLine } from "react-icons/ri";
 import { BiChevronDown } from "react-icons/bi";
-import { useWindowSize } from "../../../utils/useWindowSize";
-import { Context } from "../../../contexts/ContextProvider";
+import { useWindowSize } from "../../utils/useWindowSize";
+import { Context } from "../../contexts/ContextProvider";
+import Loading from "../../components/Loading";
 
 export default function UserId() {
+  const { loading, setLoading } = useContext(Context);
+
+  const [courseLoading, setCourseLoading] = useState(true);
 
   const [darkMode, setDarkMode] = useState(false);
 
   const router = useRouter();
-  const { _id } = router.query;
+  const { slug } = router.query;
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [addModule, setAddModule] = useState(false);
-
-  const [loading, setLoading] = useState(true);
 
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -67,34 +69,14 @@ export default function UserId() {
   const [modules, setModules] = useState([]);
 
   useEffect(() => {
-    handleGetCourseById();
-  }, [_id]);
+    handleGetCourseBySlug();
+  }, [slug]);
 
-  useEffect(() => {
-    handleGetModulesByCourseId();
-  }, [_id]);
-
-  async function handleCreateModule() {
+  async function handleGetCourseBySlug() {
     try {
-      if (_id) {
-        alert(_id);
-        await api.post(`/course/create/module/${_id}`, {
-          name: "a"
-        }).then((res) => {
-          alert(JSON.stringify(res.data));
-        });
-      } else {
-        //
-      }
-    } catch (err) {
-      //
-    }
-  }
-
-  async function handleGetCourseById() {
-    try {
-      if (_id) {
-        await api.get(`/content/course/${_id}`).then((res) => {
+      if (slug) {
+        setLoading(true);
+        await api.get(`/course/${slug}`).then((res) => {
           if (res.status === 200) {
             setCourse(res.data);
             setLoading(false);
@@ -106,47 +88,19 @@ export default function UserId() {
           }
         });
         // setCourse(response.data);
+        setCourseLoading(false);
         setLoading(false);
       } else {
-        // toast({
-        //   status: "error",
-        //   description: "Curso não encontrado",
-        // });
+        toast({
+          status: "error",
+          description: "Curso não encontrado",
+        });
+        router.push("/admin");
       }
     } catch (err) {
       // toast({
       //   status: "error",
       //   description: "Curso não encontrado",
-      // });
-      router.push("/");
-    }
-  }
-
-  async function handleGetModulesByCourseId() {
-    try {
-      if (_id) {
-        await api.get(`/content/course/modules/${_id}`).then((res) => {
-          if (res.status === 200) {
-            setModules(res.data);
-            setLoading(false);
-          } else if (res.status === 500) {
-            // toast({
-            //   status: "error",
-            //   description: "Curso não encontrado",
-            // });
-          }
-        });
-        setLoading(false);
-      } else {
-        // toast({
-        //   status: "error",
-        //   description: "Erro no metodo module",
-        // });
-      }
-    } catch (err) {
-      // toast({
-      //   status: "error",
-      //   description: "Erro no metodo module",
       // });
       router.push("/");
     }
@@ -209,6 +163,10 @@ export default function UserId() {
         </Flex>
       </Flex>
     );
+  }
+
+  if (courseLoading) {
+    return <Loading />;
   }
 
   return (
@@ -378,13 +336,7 @@ export default function UserId() {
           </ModalBody>
 
           <ModalFooter>
-            <Button
-              onClick={() => {
-                handleCreateModule();
-              }}
-              colorScheme="blue"
-              mr={3}
-            >
+            <Button onClick={() => {}} colorScheme="blue" mr={3}>
               Adicionar
             </Button>
             <Button bg="tomato">Cancelar</Button>

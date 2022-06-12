@@ -22,7 +22,11 @@ export default class MyDocument extends Document {
             rel="stylesheet"
           ></link>
         </Head>
-        <body>
+        <body
+          style={{
+            backgroundColor: "#eee",
+          }}
+        >
           <Main />
           <NextScript />
         </body>
