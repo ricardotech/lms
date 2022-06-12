@@ -278,14 +278,13 @@ export function ContextProvider({ children }: AuthProviderProps) {
   }
 
   function signOut() {
-    Router.push("/");
+    setLoading(true);
     destroyCookie(undefined, "nextauth.token");
     destroyCookie(undefined, "nextauth.refreshToken");
 
     setUser(null);
 
-    authChannel.postMessage("signOut");
-
+    Router.push("/");
     setLoading(false);
   }
 

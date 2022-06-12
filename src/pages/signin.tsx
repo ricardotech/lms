@@ -30,6 +30,7 @@ import {
   RiGoogleFill,
   RiLock2Line,
 } from "react-icons/ri";
+import Header from "../components/Header";
 import { Context } from "../contexts/ContextProvider";
 import { useWindowSize } from "../utils/useWindowSize";
 
@@ -89,55 +90,26 @@ export default function SignUp() {
           <Spinner size="xl" color="#42ba96" />
         </Flex>
       ) : (
-        <Flex
-          flexDir="column"
-          py="4"
-          justify="space-between"
-          align="center"
-          bg="#FFF"
-          h="100vh"
-          w="100vw"
-        >
-          <Flex align="center">
-            <Image
-              onClick={() => router.push("/")}
-              src="http://localhost:5556/images/inconformedia.png"
-              w="45"
-              h="45"
-              ml={-5}
-              mr="2"
-            />
-            <Flex flexDir="column">
-              <Link href="/">
-                <Text
-                  cursor="pointer"
-                  fontSize="22"
-                  fontWeight="bold"
-                  color="#000"
-                >
-                  Uppernodes
+        <Flex flexDir="column" align="center" bg="#FFF" h="100vh" w="100vw">
+          <Header none/>
+          <Flex borderRadius="5" flexDir="column">
+            <Flex flexDir="column" my="2">
+              <Text
+                mt={size.width < 600 ? "2" : "12"}
+                color="#555"
+                w="100%"
+                textAlign="left"
+                fontSize="3xl"
+                fontWeight="bold"
+              >
+                Entrar na sua conta
+              </Text>
+              <Link href="/signup">
+                <Text color="#0000aa" cursor="pointer" fontSize="lg">
+                  Ou clique aqui para registrar sua conta
                 </Text>
               </Link>
             </Flex>
-          </Flex>
-          <Flex
-            borderRadius="5"
-            mt="4"
-            flexDir="column"
-            p={isWideVersion ? "6" : "6"}
-            justify="center"
-            align="center"
-          >
-            <Text
-              color="#555"
-              w="100%"
-              textAlign="left"
-              fontSize="3xl"
-              fontWeight="bold"
-            >
-              Entrar na sua conta
-            </Text>
-
             <Input
               fontSize="sm"
               color="#333"
@@ -212,7 +184,7 @@ export default function SignUp() {
             >
               Continuar
             </Flex>
-            <Text mt="4" fontSize="xs" color="#aaa">
+            <Text mt="4" w="100%" textAlign="center" fontSize="xs" color="#aaa">
               OU
             </Text>
             <Flex
@@ -262,37 +234,14 @@ export default function SignUp() {
               <Text>Continuar com Apple</Text>
             </Flex>
 
-            <div
-              style={{
-                height: 1,
-                width: "100%",
-                backgroundColor: "#eee",
-                marginTop: 20,
-              }}
-            />
             <Flex justify="space-around" w="100%" align="center">
               <Link href="/forgot">
-                <Text cursor="pointer" color="#0000aa" fontSize="lg" mt="4">
-                  Problemas ao entrar?
-                </Text>
-              </Link>
-              <Text color="#0000aa" fontSize="lg" mt="4">
-                •
-              </Text>
-              <Link href="/signup">
-                <Text cursor="pointer" color="#0000aa" fontSize="lg" mt="4">
-                  Criar sua conta
+                <Text cursor="pointer" color="#0000aa" fontSize="lg" mt="6">
+                  Esqueceu sua senha?
                 </Text>
               </Link>
             </Flex>
           </Flex>
-          <Flex
-            borderTop="1px solid transparent"
-            w={size.width > 800 ? 500 : 350}
-            flexDir="column"
-            justify="center"
-            align="center"
-          ></Flex>
         </Flex>
       )}
     </Flex>

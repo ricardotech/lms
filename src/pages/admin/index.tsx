@@ -281,7 +281,7 @@ export default function Index() {
     return (
       <Flex w="100%" flexDir={size.width < 500 ? "column" : "row"}>
         <Report title="Novos assinantes" subtitle="eai" value={1} />
-        <Report title="Visitas no seu perfil" subtitle="vai" value={2} last />
+        <Report title="Visitas no seu perfil" subtitle="vai" value={1} last />
       </Flex>
     );
   }
@@ -322,7 +322,7 @@ export default function Index() {
             src={image.Location}
             style={{
               width: "100%",
-              height: size.width < 800 ? 200 : size.width < 1000 ? 300 : 400,
+              height: size.width < 800 ? 250 : size.width < 1000 ? 300 : 400,
             }}
           />
           <Flex p="4" flexDir="column" justify="space-between">

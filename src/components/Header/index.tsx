@@ -234,6 +234,7 @@ export default function Header({ none = false }) {
                   </Text>
                 </Flex>
                 <Flex
+                  onClick={signOut}
                   _hover={{
                     backgroundColor: "#fafafa",
                   }}

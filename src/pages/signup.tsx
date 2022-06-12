@@ -93,33 +93,32 @@ export default function SignUp() {
           <Spinner size="xl" color="#42ba96" />
         </Flex>
       ) : (
-        <Flex
-          flexDir="column"
-          px="4"
-          justify="space-between"
-          align="center"
-          bg="#FFF"
-          w="100vw"
-        >
+        <Flex flexDir="column" px="4" align="center" bg="#FFF" w="100vw">
           <Header none={true} />
           <Flex
             borderRadius="5"
             flexDir="column"
             p={isWideVersion ? "6" : "2"}
             justify="center"
-            align="center"
             bg="#FFF"
           >
-            <Text
-              color="#555"
-              w="100%"
-              textAlign="left"
-              fontSize="3xl"
-              fontWeight="bold"
-            >
-              Crie sua conta
-            </Text>
-
+            <Flex flexDir="column" mb="2">
+              <Text
+                mt={size.width < 600 ? "2" : "12"}
+                color="#555"
+                w="100%"
+                textAlign="left"
+                fontSize="3xl"
+                fontWeight="bold"
+              >
+                Crie sua conta
+              </Text>
+              <Link href="/signin">
+                <Text color="#0000aa" cursor="pointer" fontSize="lg">
+                  Ou clique aqui para entrar na sua conta
+                </Text>
+              </Link>
+            </Flex>
             <Input
               fontSize="sm"
               color="#333"
@@ -222,7 +221,7 @@ export default function SignUp() {
             >
               Continuar
             </Flex>
-            <Text mt="4" fontSize="xs" color="#aaa">
+            <Text w="100%" textAlign="center" mt="4" fontSize="xs" color="#aaa">
               OU
             </Text>
             <Flex
@@ -271,28 +270,7 @@ export default function SignUp() {
               />
               <Text>Continuar com Apple</Text>
             </Flex>
-
-            <div
-              style={{
-                height: 1,
-                width: "100%",
-                backgroundColor: "#eee",
-                marginTop: 20,
-              }}
-            />
-            <Link href="/signin">
-              <Text color="#0000aa" cursor="pointer" fontSize="lg" mt="4">
-                Entrar na sua conta
-              </Text>
-            </Link>
           </Flex>
-          <Flex
-            borderTop="1px solid transparent"
-            w={size.width > 800 ? 500 : 350}
-            flexDir="column"
-            justify="center"
-            align="center"
-          ></Flex>
         </Flex>
       )}
     </Flex>

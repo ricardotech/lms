@@ -456,7 +456,7 @@ export default function Index() {
 
       <Header none={true} />
 
-      <Flex flexDir="column" w="100vw" bg="#fff" px="6">
+      <Flex flexDir="column" w="100vw" px="6">
         <FirstContent />
         <SecondContent />
         <ThirdContent />
