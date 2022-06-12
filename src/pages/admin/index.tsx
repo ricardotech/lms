@@ -342,7 +342,7 @@ export default function Index() {
         flexDir="row"
         my="4"
       >
-        {courses &&
+        {courses.length > 0 ? (
           courses.map((course, i) => {
             return (
               <Course
@@ -353,7 +353,23 @@ export default function Index() {
                 description={course.description}
               />
             );
-          })}
+          })
+        ) : (
+          <Flex
+            borderRadius="5"
+            bg="#fff"
+            px="4"
+            py="6"
+            justify="center"
+            align="center"
+            w="100%"
+            my="2"
+          >
+            <Text color="#333" w="100%" textAlign="center" fontSize="lg">
+              Você ainda não possui nenhum curso :/
+            </Text>
+          </Flex>
+        )}
       </SimpleGrid>
     );
   }
