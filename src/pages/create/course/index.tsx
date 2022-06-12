@@ -530,8 +530,8 @@ export default function Index() {
                       borderRadius: 5,
                       border: "1px solid #e0e0e0",
                     }}
-                    cols={size.width < 500 ? 4 : size.width < 600 ? 5 : 7}
-                    rows={size.width < 500 ? 4 : size.width < 600 ? 5 : 7}
+                    cols={size.width < 500 ? 4 : size.width < 600 ? 7 : 9}
+                    rows={size.width < 500 ? 4 : size.width < 600 ? 7 : 9}
                   ></textarea>
                   <Flex
                     onClick={() => {
@@ -1161,7 +1161,7 @@ export default function Index() {
                             px="4"
                           >
                             <Text color="#f00066" fontSize="md">
-                              Explorar tutorial
+                              Seja um assinante
                             </Text>
                             <Icon
                               ml="2"

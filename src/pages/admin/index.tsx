@@ -173,7 +173,6 @@ export default function Index() {
         <Tooltip
           bg="#FFF"
           color="#333"
-          borderRadius="5"
           label={
             title === "Criar seu primeiro curso"
               ? "Clique para criar seu primeiro curso"
@@ -244,7 +243,7 @@ export default function Index() {
       last = false,
     }: ReportType) {
       return (
-        <Tooltip bg="#FFF" color="#333" borderRadius="5" label={title}>
+        <Tooltip bg="#FFF" color="#333" label={title}>
           <Flex
             _hover={{
               boxShadow: "rgba(0,0,0,0.1) 0 0 10px",
@@ -387,7 +386,6 @@ export default function Index() {
             <Tooltip
               bg="#FFF"
               color="#333"
-              borderRadius="5"
               label="Clique para mudar a data de seus relatórios"
             >
               <Flex

@@ -102,7 +102,7 @@ export default function UserId() {
       //   status: "error",
       //   description: "Curso não encontrado",
       // });
-      router.push("/");
+      router.push("/admin");
     }
   }
 
