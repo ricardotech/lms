@@ -17,6 +17,7 @@ import {
 } from "react-icons/ri";
 import { Context } from "../../contexts/ContextProvider";
 import Header from "../Header";
+import Sidebar from "../Sidebar";
 import TopNav from "../TopNav";
 
 type LoadingProps = {
@@ -58,7 +59,7 @@ export default function Loading({ title }: LoadingProps) {
               fontWeight="bold"
               fontFamily="'Quicksand', sans-serif"
             >
-              Oraculu
+              Uppernodes
             </Text>
           </Link>
           <Link href="https://dribbble.com/natashakukhalskaya" passHref={true}>
@@ -123,18 +124,22 @@ export default function Loading({ title }: LoadingProps) {
     <Flex
       flex="1"
       flexDir="column"
+      w="100%"
       h="100vh"
       position="absolute"
       zIndex="1000"
       justifyContent="space-between"
       bg="#EEE"
     >
-      <Header none />
+      <Sidebar none />
       <Flex
         flexDir="column"
         justifyContent="center"
         w="100%"
-        h="50%"
+        h="100%"
+        style={{
+          paddingTop: 80,
+        }}
         align="center"
       >
         <Spinner color="#333" size="xl" />

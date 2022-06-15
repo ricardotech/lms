@@ -24,7 +24,7 @@ export default class MyDocument extends Document {
         </Head>
         <body
           style={{
-            backgroundColor: "#eee",
+            backgroundColor: "#FFF",
           }}
         >
           <Main />

@@ -55,11 +55,11 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { api } from "../../services/apiClient";
 
-import { MdDarkMode, MdTouchApp } from "react-icons/md";
+import { MdDarkMode, MdImageNotSupported, MdTouchApp } from "react-icons/md";
 
 import ReactMarkdown from "react-markdown";
 
-import Header from "../../components/Header";
+import Sidebar from "../../components/Sidebar";
 import {
   RiAddBoxFill,
   RiCloseLine,
@@ -84,9 +84,17 @@ import {
   BiImageAdd,
   BiTrashAlt,
 } from "react-icons/bi";
+import { FcPlus } from "react-icons/fc";
 
 export default function Index() {
-  const { user, signOut, loading, setLoading } = useContext(Context);
+  const {
+    user,
+    signOut,
+    loading,
+    setLoading,
+    isSidebarOpen,
+    setIsSidebarOpen,
+  } = useContext(Context);
 
   const [playing, setPlaying] = useState(true);
 
@@ -171,8 +179,11 @@ export default function Index() {
     function Option({ title }) {
       return (
         <Tooltip
-          bg="#FFF"
           color="#333"
+          ml="2"
+          borderRadius="5"
+          p="2"
+          bg="#FFF"
           label={
             title === "Criar seu primeiro curso"
               ? "Clique para criar seu primeiro curso"
@@ -204,7 +215,7 @@ export default function Index() {
             bg="#FFF"
             align="center"
           >
-            <Icon as={RiAddBoxFill} mr="6" color="green.500" fontSize="xl" />
+            <Icon as={FcPlus} mr="4" color="#333" fontSize="30" />
             <Text color="#333">{title}</Text>
           </Flex>
         </Tooltip>
@@ -243,7 +254,14 @@ export default function Index() {
       last = false,
     }: ReportType) {
       return (
-        <Tooltip bg="#FFF" color="#333" label={title}>
+        <Tooltip
+          bg="#FFF"
+          color="#333"
+          ml="2"
+          borderRadius="5"
+          p="2"
+          label={title}
+        >
           <Flex
             _hover={{
               boxShadow: "rgba(0,0,0,0.1) 0 0 10px",
@@ -336,9 +354,8 @@ export default function Index() {
 
     return (
       <SimpleGrid
-        columns={size.width < 500 ? 1 : 2}
+        columns={size.width < 500 ? 1 : size.width < 1200 ? 2 : 3}
         gridGap="4"
-        maxW={1000}
         flexDir="row"
         my="4"
       >
@@ -356,16 +373,19 @@ export default function Index() {
           })
         ) : (
           <Flex
+            flexDir="column"
             borderRadius="5"
             bg="#fff"
             px="4"
             py="6"
             justify="center"
             align="center"
-            w="100%"
+            w="calc(100vw - 40px)"
             my="2"
+            mb="10"
           >
-            <Text color="#333" w="100%" textAlign="center" fontSize="lg">
+            <Icon as={MdImageNotSupported} fontSize="120" my="10" color="#333" />
+            <Text color="#333" w="100%" textAlign="center" fontSize="2xl">
               Você ainda não possui nenhum curso :/
             </Text>
           </Flex>
@@ -391,10 +411,33 @@ export default function Index() {
         />
       </Head>
 
-      <Header none={false} />
+      <Sidebar />
 
-      <Flex flexDir="column" w="100vw" px="6" py="4">
-        <Flex flexDir="column" maxW={1000} mx="auto" w="100%">
+      {isSidebarOpen && (
+        <Flex
+          onClick={() => setIsSidebarOpen(false)}
+          position="absolute"
+          h="100%"
+          w="100%"
+          zIndex="2"
+          style={{
+            backgroundColor: isSidebarOpen ? "rgba(0, 0, 0, 0.2)" : "#eee",
+          }}
+        />
+      )}
+
+      <Flex
+        flexDir="column"
+        w="100vw"
+        px="6"
+        py="4"
+        bg="#FAFAFA"
+        style={{
+          paddingTop: 100,
+          paddingLeft: size.width > 700 && 100,
+        }}
+      >
+        <Flex flexDir="column" mx="auto" w="100%">
           <Flex w="100%" justify="space-between" align="center">
             <Text color="#31343A" fontWeight="bold" fontSize={["xl", "2xl"]}>
               Seus relatórios
@@ -402,6 +445,9 @@ export default function Index() {
             <Tooltip
               bg="#FFF"
               color="#333"
+              ml="2"
+              borderRadius="5"
+              p="2"
               label="Clique para mudar a data de seus relatórios"
             >
               <Flex

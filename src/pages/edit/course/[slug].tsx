@@ -78,7 +78,11 @@ import {
 import Sidebar from "../../../components/Sidebar";
 
 export default function Index() {
-  const { user, signOut, loading } = useContext(Context);
+  const { user, signOut, loading, setLoading } = useContext(Context);
+
+  const router = useRouter();
+
+  const { slug } = router.query;
 
   // values
   const [uploading, setUploading] = useState<Boolean>();
@@ -118,12 +122,72 @@ export default function Index() {
 
   const size = useWindowSize();
 
-  const router = useRouter();
-
   const [preview, setPreview] = useState(undefined);
   const [uploadButtonText, setUploadButtonText] = useState("");
 
   const toast = useToast();
+
+  type Course = {
+    _id: string;
+    creator: {
+      _id: string;
+    };
+    category: string;
+    name: string;
+    slug: string;
+    price: number;
+    paid: boolean;
+    image: {
+      ETag: string;
+      VersionId: string;
+      Location: string;
+      key: string;
+      Bucket: string;
+    };
+    description?: string;
+    requisites?: [string];
+    models: [string];
+  };
+
+  const [course, setCourse] = useState<Course | null>();
+
+  useEffect(() => {
+    handleGetCourseBySlug();
+  }, [slug]);
+
+  async function handleGetCourseBySlug() {
+    try {
+      if (slug) {
+        setLoading(true);
+        await api.get(`/course/${slug}`).then((res) => {
+          if (res.status === 200) {
+            setCourse(res.data);
+            setLoading(false);
+          } else if (res.status === 500) {
+            // toast({
+            //   status: "error",
+            //   description: "Curso não encontrado",
+            // });
+          }
+        });
+        // setCourse(response.data);
+        setCourseLoading(false);
+        setLoading(false);
+      } else {
+        toast({
+          status: "error",
+          description: "Curso não encontrado",
+        });
+        router.push(`/course/${slug}`);
+      }
+    } catch (err) {
+      // toast({
+      //   status: "error",
+      //   description: "Curso não encontrado",
+      // });
+      router.push(`/course/${slug}`);
+    }
+  }
 
   const handleCreateImage = (e) => {
     if (e.target.files.length !== 0) {
@@ -200,7 +264,7 @@ export default function Index() {
         description: res.data.message,
       });
       setTimeout(() => {
-        router.push("/admin");
+        router.push(`/course/${slug}`);
       }, 500);
     } else if (
       res.data.message === "Infelizmente já existe um curso com esse nome"
@@ -245,13 +309,15 @@ export default function Index() {
         onClick={() => setCategory(title)}
         cursor="pointer"
         borderRadius="full"
-        bg={category === title ? "#333" : "transparent"}
-        border={category === title ? "1px solid #eee" : "1px solid #e0e0e0"}
+        bg={course.category === title ? "#333" : "transparent"}
+        border={
+          course.category === title ? "1px solid #eee" : "1px solid #e0e0e0"
+        }
         justify="center"
         align="center"
       >
         <Text
-          color={category === title ? "#FFF" : "#333"}
+          color={course.category === title ? "#FFF" : "#333"}
           fontSize="sm"
           fontWeight="bold"
         >
@@ -275,7 +341,7 @@ export default function Index() {
       <Drawer
         placement="bottom"
         onClose={() => {
-          router.push("/admin");
+          router.push(`/course/${slug}`);
           onClose();
         }}
         isOpen={isOpen}
@@ -304,7 +370,7 @@ export default function Index() {
               <Flex flexDir="column" mt="2">
                 <Text fontSize="2xl" color="#333" fontWeight="bold">
                   {page === 1
-                    ? "Criar curso"
+                    ? "Editar curso"
                     : page === 2
                     ? "Dados do curso"
                     : `Estamos quase lá`}
@@ -314,7 +380,11 @@ export default function Index() {
                 </Text>
               </Flex>
               <Flex>
-                {page !== 3 && preview && name && description && thumbAdded ? (
+                {page !== 3 &&
+                course &&
+                course.image.Location &&
+                course.name &&
+                course.description ? (
                   <Flex
                     onClick={() => {
                       if (page === 1) {
@@ -373,7 +443,7 @@ export default function Index() {
                     <Icon as={RiArrowLeftLine} fontSize="xl" color="#333" />
                   </Flex>
                 ) : null}
-                {page === 2 && category && categoryAdded && (
+                {page === 2 && course.category && (
                   <Flex
                     onClick={() => {
                       setPage(3);
@@ -397,7 +467,7 @@ export default function Index() {
                 )}
                 <Flex
                   onClick={() => {
-                    router.push("/admin");
+                    router.push(`/course/${slug}`);
                     onClose();
                   }}
                   cursor="pointer"
@@ -444,11 +514,10 @@ export default function Index() {
                     )}
                   </Flex>
                   <label>
-                    {preview ? (
+                    {course && course.image ? (
                       <Image
-                        src={preview}
+                        src={course && course.image.Location}
                         maxH={160}
-                        maxW={160}
                         borderRadius="5"
                       />
                     ) : (
@@ -500,9 +569,9 @@ export default function Index() {
                   </Text>
                   <Input
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setName(e.target.value)
+                      setCourse({ ...course, name: e.target.value })
                     }
-                    value={name}
+                    value={course ? course.name : name}
                     borderRadius="5"
                     style={{
                       padding: 10,
@@ -519,10 +588,12 @@ export default function Index() {
                     Descrição
                   </Text>
                   <textarea
-                    value={description}
                     onChange={(
-                      ev: React.ChangeEvent<HTMLTextAreaElement>
-                    ): void => setDescription(ev.target.value)}
+                      e: React.ChangeEvent<HTMLTextAreaElement>
+                    ): void =>
+                      setCourse({ ...course, description: e.target.value })
+                    }
+                    value={course && course.description}
                     name="description"
                     style={{
                       padding: 10,
@@ -537,7 +608,7 @@ export default function Index() {
                   <Flex
                     onClick={() => {
                       // also validate if the name is already taken
-                      if (!preview) {
+                      if (!course.image) {
                         toast({
                           position: "top",
                           status: "error",
@@ -545,7 +616,7 @@ export default function Index() {
                             "Você precisa adicionar uma capa ao seu curso",
                           duration: 1000,
                         });
-                      } else if (!name) {
+                      } else if (!course.name) {
                         toast({
                           position: "top",
                           status: "error",
@@ -553,7 +624,7 @@ export default function Index() {
                             "Você precisa adicionar um nome ao seu curso",
                           duration: 1000,
                         });
-                      } else if (name.length < 7) {
+                      } else if (course.name.length < 7) {
                         toast({
                           position: "top",
                           status: "error",
@@ -561,7 +632,7 @@ export default function Index() {
                             "O nome do seu curso precisa conter pelo menos 7 letras",
                           duration: 1000,
                         });
-                      } else if (!description) {
+                      } else if (!course.description) {
                         toast({
                           position: "top",
                           status: "error",
@@ -599,7 +670,7 @@ export default function Index() {
                     mb={size.width < 1000 ? "2" : 0}
                   >
                     <Text fontWeight="bold" color="#FFF">
-                      Adicionar curso
+                      Continuar editando
                     </Text>
                   </Flex>
                 </Flex>
@@ -640,17 +711,17 @@ export default function Index() {
                       <Checkbox
                         colorScheme="green"
                         onChange={() => {
-                          if (paid) {
-                            setPaid(false);
+                          if (course.paid) {
+                            setCourse({ ...course, paid: false });
                           }
                         }}
-                        isChecked={!paid && true}
+                        isChecked={!course.paid && true}
                       />
                       <Text
                         cursor="pointer"
                         onClick={() => {
-                          if (paid) {
-                            setPaid(false);
+                          if (course.paid) {
+                            setCourse({ ...course, paid: false });
                           }
                         }}
                         ml="2"
@@ -662,18 +733,18 @@ export default function Index() {
                     <Flex mt="4">
                       <Checkbox
                         onChange={() => {
-                          if (!paid) {
-                            setPaid(true);
+                          if (!course.paid) {
+                            setCourse({ ...course, paid: true });
                           }
                         }}
                         colorScheme="green"
-                        isChecked={paid}
+                        isChecked={course.paid}
                       />
                       <Text
                         cursor="pointer"
                         onClick={() => {
-                          if (!paid) {
-                            setPaid(true);
+                          if (!course.paid) {
+                            setCourse({ ...course, paid: true });
                           }
                         }}
                         ml="2"
@@ -684,7 +755,7 @@ export default function Index() {
                     </Flex>
                   </Flex>
 
-                  {paid && (
+                  {course.paid && (
                     <Flex flexDir="column" mt="6">
                       <Text color="#333" fontSize="lg">
                         Como será o formato do seu modelo assinatura?
@@ -764,14 +835,14 @@ export default function Index() {
 
                   <Flex
                     onClick={() => {
-                      if (!category) {
+                      if (!course.category) {
                         toast({
                           position: "top",
                           status: "error",
                           description: "Você precisa selecionar uma categoria",
                           duration: 1000,
                         });
-                      } else if (!paid) {
+                      } else if (!course.paid) {
                         setTimeout(() => {
                           toast({
                             position: "top",
@@ -784,7 +855,7 @@ export default function Index() {
                           setPage(3);
                           setCategoryAdded(true);
                         }, 750);
-                      } else if (!price) {
+                      } else if (!course.price) {
                         toast({
                           position: "top",
                           status: "error",
@@ -817,7 +888,7 @@ export default function Index() {
                     align="center"
                   >
                     <Text fontWeight="bold" color="#FFF">
-                      Próximo
+                      Continuar editando
                     </Text>
                   </Flex>
                   {size.width > 300 && <Flex py="2" />}
@@ -835,7 +906,7 @@ export default function Index() {
                       </Text>
                       <Image
                         mt="2"
-                        src={preview}
+                        src={course && course.image.Location}
                         maxH={160}
                         maxW={160}
                         borderRadius="5"
@@ -844,7 +915,7 @@ export default function Index() {
                         Nome do curso
                       </Text>
                       <Text fontSize="2xl" color="#333" fontWeight="bold">
-                        {name}
+                        {course.name}
                       </Text>
                       <Text mt="2" fontSize="md" color="#333">
                         Categoria
@@ -859,7 +930,7 @@ export default function Index() {
                         align="center"
                       >
                         <Text color="#333" fontWeight="bold">
-                          {category}
+                          {course.category}
                         </Text>
                       </Flex>
                       {size.width > 1000 && (
@@ -868,7 +939,7 @@ export default function Index() {
                             Modelo de assinatura
                           </Text>
                           <Text fontSize="2xl" color="#333" fontWeight="bold">
-                            {paid ? "Pago" : "Gratuíto"}
+                            {course.paid ? "Pago" : "Gratuíto"}
                           </Text>
                           <Text mt="4" fontSize="md" color="#333">
                             Formato do modelo de assinatura
@@ -902,9 +973,9 @@ export default function Index() {
                           Modelo de assinatura
                         </Text>
                         <Text fontSize="2xl" color="#333" fontWeight="bold">
-                          {paid ? "Pago" : "Gratuíto"}
+                          {course.paid ? "Pago" : "Gratuíto"}
                         </Text>
-                        {paid && (
+                        {course.paid && (
                           <Flex
                             flexDir={size.width < 1000 ? "column" : "row"}
                             align={size.width < 1000 ? "normal" : "center"}
@@ -934,7 +1005,7 @@ export default function Index() {
                                 color="#333"
                                 fontWeight="bold"
                               >
-                                {price}
+                                {course.price}
                               </Text>
                             </Flex>
                           </Flex>
@@ -949,7 +1020,7 @@ export default function Index() {
                             color="#333"
                             fontWeight="bold"
                           >
-                            {description}
+                            {course.description}
                           </Text>
                           <Text mt="4" fontSize="md" color="#333">
                             Ao confirmar você confirma que leu e concorda com
@@ -1151,10 +1222,6 @@ export default function Index() {
                         </Text>
                         <Flex flexDir="column">
                           <Flex
-                            onClick={() => {
-                              onClose();
-                              router.push("/admin");
-                            }}
                             _hover={{
                               opacity: 0.9,
                             }}
@@ -1166,7 +1233,7 @@ export default function Index() {
                             px="4"
                           >
                             <Text color="#f00066" fontSize="md">
-                              Explore um mundo de oportunidades
+                              Seja um assinante
                             </Text>
                             <Icon
                               ml="2"
@@ -1370,7 +1437,13 @@ export default function Index() {
                             color="#FFF"
                             fontWeight="bold"
                           >
-                            {description}
+                            asdfjkhasdjkfhasjkdf asldfjhsadjkfh askdjfhskjdfh
+                            asdfjkhasdjkfhasjkdf asldfjhsadjkfh askdjfhskjdfh
+                            asdfjkhasdjkfhasjkdf asldfjhsadjkfh askdjfhskjdfh
+                            asdfjkhasdjkfhasjkdf asldfjhsadjkfh askdjfhskjdfh
+                            asdfjkhasdjkfhasjkdf asldfjhsadjkfh askdjfhskjdfh
+                            asdfjkhasdjkfhasjkdf asldfjhsadjkfh askdjfhskjdfh
+                            asdfjkhasdjkfhasjkdf
                           </Text>
                         </Flex>
                       </Flex>

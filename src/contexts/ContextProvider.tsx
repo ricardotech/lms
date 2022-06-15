@@ -62,6 +62,8 @@ type AuthContextData = {
   updateName: (values: TUpdate) => Promise<any>;
   loading: boolean;
   setLoading: (value: boolean) => any;
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: (value: boolean) => any;
 };
 
 type AuthProviderProps = {
@@ -85,6 +87,7 @@ export function ContextProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>();
 
   const [loading, setLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const isAuthenticated = !!user;
 
@@ -307,6 +310,8 @@ export function ContextProvider({ children }: AuthProviderProps) {
         user,
         loading,
         setLoading,
+        isSidebarOpen,
+        setIsSidebarOpen,
       }}
     >
       {children}
