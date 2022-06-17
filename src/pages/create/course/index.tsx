@@ -76,6 +76,7 @@ import {
   BiUserVoice,
 } from "react-icons/bi";
 import Sidebar from "../../../components/Sidebar";
+import ReactMarkdown from "react-markdown";
 
 export default function Index() {
   const { user, signOut, loading } = useContext(Context);
@@ -489,6 +490,7 @@ export default function Index() {
                         display: "none",
                       }}
                       type="file"
+                      accept="image/*"
                     />
                   </label>
                   <Text
@@ -949,7 +951,7 @@ export default function Index() {
                             color="#333"
                             fontWeight="bold"
                           >
-                            {description}
+                            <ReactMarkdown children={description} />
                           </Text>
                           <Text mt="4" fontSize="md" color="#333">
                             Ao confirmar você confirma que leu e concorda com
@@ -1370,7 +1372,7 @@ export default function Index() {
                             color="#FFF"
                             fontWeight="bold"
                           >
-                            {description}
+                            <ReactMarkdown children={description} />
                           </Text>
                         </Flex>
                       </Flex>

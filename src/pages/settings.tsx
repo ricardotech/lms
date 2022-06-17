@@ -71,7 +71,7 @@ export default function Settings() {
   const series = [
     {
       name: "series1",
-      data: [13, 120, 10, 28, 51, 18, 109],
+      data: [13, 120, 10, 28, 51, 18, 80],
     },
   ];
 

@@ -2,3 +2,5 @@
 .vercel
 /.next
 .next
+.env
+.env.local

@@ -77,13 +77,14 @@ export default function Sidebar({ none = false }) {
         bg="#FFF"
       >
         <Flex
-          w="100%"
-          maxW={1200}
-          mx="auto"
+          borderBottom="1px solid #eee"
+          position="fixed"
           style={{
             height: 79,
+            paddingRight: 30,
           }}
           bg="#FFF"
+          w="100%"
           align="center"
           justify="space-between"
         >
@@ -334,6 +335,93 @@ export default function Sidebar({ none = false }) {
                 </Text>
               </Flex>
             )}
+          </Flex>
+        </Flex>
+      )}
+      {size.width > 700 && !loading && (
+        <Flex
+          position="fixed"
+          zIndex="1"
+          borderRight="1px solid #eaeaea"
+          style={{
+            width: 79,
+            height: "100vh",
+            backgroundColor: "#FFF",
+          }}
+        >
+          <Flex
+            flexDir="column"
+            justify="space-between"
+            style={{
+              padding: 10,
+            }}
+          >
+            <Flex />
+            <Flex flexDir="column">
+              <Tooltip
+                bg="#FFF"
+                color="#333"
+                ml="2"
+                borderRadius="5"
+                p="2"
+                label="Clique para ver seus relatórios"
+              >
+                <Flex
+                  cursor="pointer"
+                  p="2"
+                  _hover={{
+                    boxShadow: "rgba(0,0,0,0.1) 0 0 10px",
+                  }}
+                  align="center"
+                  borderRadius="5"
+                >
+                  <Icon as={FcBarChart} color="#333" fontSize="40" />
+                </Flex>
+              </Tooltip>
+              <Tooltip
+                bg="#FFF"
+                color="#333"
+                ml="2"
+                borderRadius="5"
+                p="2"
+                label="Clique para ver seus alunos"
+              >
+                <Flex
+                  cursor="pointer"
+                  p="2"
+                  _hover={{
+                    boxShadow: "rgba(0,0,0,0.1) 0 0 10px",
+                  }}
+                  align="center"
+                  borderRadius="5"
+                >
+                  <Icon as={FcReading} color="#333" fontSize="40" />
+                </Flex>
+              </Tooltip>
+            </Flex>
+            <Flex>
+              <Tooltip
+                bg="#FFF"
+                color="#333"
+                ml="2"
+                borderRadius="5"
+                p="2"
+                label="Configurações"
+              >
+                <Flex
+                  cursor="pointer"
+                  p="2"
+                  onClick={() => router.push("/settings")}
+                  _hover={{
+                    boxShadow: "rgba(0,0,0,0.1) 0 0 10px",
+                  }}
+                  align="center"
+                  borderRadius="5"
+                >
+                  <Icon as={FcAutomatic} color="#333" fontSize="40" />
+                </Flex>
+              </Tooltip>
+            </Flex>
           </Flex>
         </Flex>
       )}

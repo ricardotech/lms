@@ -41,40 +41,43 @@ export default function Loading({ title }: LoadingProps) {
         mt="10"
         flexDir="row"
         p="4"
-        w="100%"
         boxShadow="rgba(0,0,0,0.1) 0 0 10px"
         borderRadius="5"
         align="center"
         justifyContent="space-between"
       >
-        <Flex flexDir="column">
-          <Link
-            href="https://dribbble.com/shots/14468614-404-Illustration"
-            passHref={true}
-          >
-            <Text
-              cursor="pointer"
-              color="#333"
-              fontSize="lg"
-              fontWeight="bold"
-              fontFamily="'Quicksand', sans-serif"
+        <Flex maxW={1200} mx="auto" flexDir="row" w="100%">
+          <Flex flexDir="column">
+            <Link
+              href="https://dribbble.com/shots/14468614-404-Illustration"
+              passHref={true}
             >
-              Uppernodes
-            </Text>
-          </Link>
-          <Link href="https://dribbble.com/natashakukhalskaya" passHref={true}>
-            <Text
-              cursor="pointer"
-              color="#333"
-              fontWeight="regular"
-              fontSize="xs"
-              fontFamily="'Quicksand', sans-serif"
+              <Text
+                cursor="pointer"
+                color="#333"
+                fontSize="lg"
+                fontWeight="bold"
+                fontFamily="'Quicksand', sans-serif"
+              >
+                Uppernodes Learning
+              </Text>
+            </Link>
+            <Link
+              href="https://dribbble.com/natashakukhalskaya"
+              passHref={true}
             >
-              Feito por e para você ❤️
-            </Text>
-          </Link>
-        </Flex>
-        {/* <Flex align="center">
+              <Text
+                cursor="pointer"
+                color="#333"
+                fontWeight="regular"
+                fontSize="xs"
+                fontFamily="'Quicksand', sans-serif"
+              >
+                Feito por e para você ❤️
+              </Text>
+            </Link>
+          </Flex>
+          {/* <Flex align="center">
           <Icon
             onClick={() => {
               toast({
@@ -116,6 +119,7 @@ export default function Loading({ title }: LoadingProps) {
             />
           </Link>
         </Flex> */}
+        </Flex>
       </Flex>
     );
   }

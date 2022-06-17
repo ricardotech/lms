@@ -384,7 +384,12 @@ export default function Index() {
             my="2"
             mb="10"
           >
-            <Icon as={MdImageNotSupported} fontSize="120" my="10" color="#333" />
+            <Icon
+              as={MdImageNotSupported}
+              fontSize="120"
+              my="10"
+              color="#333"
+            />
             <Text color="#333" w="100%" textAlign="center" fontSize="2xl">
               Você ainda não possui nenhum curso :/
             </Text>
@@ -434,60 +439,61 @@ export default function Index() {
         bg="#FAFAFA"
         style={{
           paddingTop: 100,
-          paddingLeft: size.width > 700 && 100,
         }}
       >
-        <Flex flexDir="column" mx="auto" w="100%">
-          <Flex w="100%" justify="space-between" align="center">
-            <Text color="#31343A" fontWeight="bold" fontSize={["xl", "2xl"]}>
-              Seus relatórios
-            </Text>
-            <Tooltip
-              bg="#FFF"
-              color="#333"
-              ml="2"
-              borderRadius="5"
-              p="2"
-              label="Clique para mudar a data de seus relatórios"
-            >
-              <Flex
-                _hover={{
-                  boxShadow: "rgba(0,0,0,0.1) 0 0 10px",
-                }}
-                cursor="pointer"
-                borderRadius="5"
-                justify="center"
-                align="center"
-                px="3"
-                py="2"
+        <Flex w="100%" h="100%" flexDir="column" maxW={1200} mx="auto">
+          <Flex flexDir="column" mx="auto" w="100%">
+            <Flex w="100%" justify="space-between" align="center">
+              <Text color="#31343A" fontWeight="bold" fontSize={["xl", "2xl"]}>
+                Seus relatórios
+              </Text>
+              <Tooltip
                 bg="#FFF"
+                color="#333"
+                ml="2"
+                borderRadius="5"
+                p="2"
+                label="Clique para mudar a data de seus relatórios"
               >
-                <Text color="#333">7 dias</Text>
-                <Icon as={BiChevronDown} ml="2" fontSize="sm" color="#333" />
-              </Flex>
-            </Tooltip>
+                <Flex
+                  _hover={{
+                    boxShadow: "rgba(0,0,0,0.1) 0 0 10px",
+                  }}
+                  cursor="pointer"
+                  borderRadius="5"
+                  justify="center"
+                  align="center"
+                  px="3"
+                  py="2"
+                  bg="#FFF"
+                >
+                  <Text color="#333">7 dias</Text>
+                  <Icon as={BiChevronDown} ml="2" fontSize="sm" color="#333" />
+                </Flex>
+              </Tooltip>
+            </Flex>
+            <InstructorReports />
+
+            <Text
+              mt="8"
+              color="#31343A"
+              fontWeight="bold"
+              fontSize={["xl", "2xl"]}
+            >
+              Ações rápidas
+            </Text>
+            <StarterOptions />
+
+            <Text
+              mt="8"
+              color="#31343A"
+              fontWeight="bold"
+              fontSize={["xl", "2xl"]}
+            >
+              Seus cursos
+            </Text>
+            <InstructorCourses />
           </Flex>
-          <InstructorReports />
-
-          <Text
-            mt="8"
-            color="#31343A"
-            fontWeight="bold"
-            fontSize={["xl", "2xl"]}
-          >
-            Ações rápidas
-          </Text>
-          <StarterOptions />
-
-          <Text
-            mt="8"
-            color="#31343A"
-            fontWeight="bold"
-            fontSize={["xl", "2xl"]}
-          >
-            Seus cursos
-          </Text>
-          <InstructorCourses />
         </Flex>
       </Flex>
 

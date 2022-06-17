@@ -102,6 +102,7 @@ export default function Index() {
     name,
     description,
     price,
+    image,
     uploading,
     paid,
     category,
@@ -111,14 +112,6 @@ export default function Index() {
   const [page, setPage] = useState<1 | 2 | 3>(1);
   const [thumbAdded, setThumbAdded] = useState(false);
   const [categoryAdded, setCategoryAdded] = useState(false);
-
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, "");
-
-    if (Number(value) < 10000) {
-      setPrice("R$ " + value);
-    }
-  };
 
   const size = useWindowSize();
 
@@ -135,8 +128,8 @@ export default function Index() {
     category: string;
     name: string;
     slug: string;
-    price: number;
     paid: boolean;
+    price: number;
     image: {
       ETag: string;
       VersionId: string;
@@ -202,8 +195,7 @@ export default function Index() {
             image: uri,
           });
 
-          setImage(data.data);
-          setValues({ ...values, courseLoading: false });
+          setCourse({ ...course, image: data.data });
         } catch (err) {
           console.log(err);
           setValues({ ...values, courseLoading: false });
@@ -249,23 +241,22 @@ export default function Index() {
     }
   };
 
-  const handleCreateCourse = async (e) => {
-    const res = await api.post("/course/create", {
-      name,
-      description,
-      price: paid ? Number(price.split(" ")[1]) : 0,
-      paid,
-      category,
-      image,
+  const handleEditCourse = async (e) => {
+    const res = await api.put(`/course/${slug}`, {
+      name: course.name,
+      description: course.description,
+      paid: course.paid,
+      price: course.paid ? course.price : 0,
+      category: course.category,
+      image: course.image,
     });
-    if (res.data.message === "Curso criado com sucesso!") {
+    if (res.data === "Unauthorized") {
       toast({
-        status: "success",
-        description: res.data.message,
+        position: "top",
+        status: "error",
+        description: "Tente novamente mais tarde",
       });
-      setTimeout(() => {
-        router.push(`/course/${slug}`);
-      }, 500);
+      router.push("/admin");
     } else if (
       res.data.message === "Infelizmente já existe um curso com esse nome"
     ) {
@@ -277,9 +268,10 @@ export default function Index() {
     } else {
       toast({
         position: "top",
-        status: "error",
-        description: "Tente novamente mais tarde",
+        status: "success",
+        description: "Curso editado com sucesso",
       });
+      router.push("/admin");
     }
   };
 
@@ -571,7 +563,7 @@ export default function Index() {
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setCourse({ ...course, name: e.target.value })
                     }
-                    value={course ? course.name : name}
+                    value={course && course.name}
                     borderRadius="5"
                     style={{
                       padding: 10,
@@ -809,7 +801,7 @@ export default function Index() {
                     </Flex>
                   )}
 
-                  {paid && (
+                  {course.paid && (
                     <Flex flexDir="column" mt="6">
                       <Text color="#333" fontSize="lg">
                         Qual será o valor{" "}
@@ -827,8 +819,13 @@ export default function Index() {
                           border: "1px solid #e0e0e0",
                         }}
                         placeholder="R$"
-                        value={price}
-                        onChange={handlePriceChange}
+                        value={course.price}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          setCourse({
+                            ...course,
+                            price: Number(e.target.value),
+                          });
+                        }}
                       />
                     </Flex>
                   )}
@@ -1038,7 +1035,7 @@ export default function Index() {
                         </Flex>
                         <Flex
                           cursor="pointer"
-                          onClick={handleCreateCourse}
+                          onClick={handleEditCourse}
                           mt="4"
                           bg="#f00066"
                           borderRadius="5"
@@ -1458,7 +1455,7 @@ export default function Index() {
                           </Text>
                         </Flex>
                         <Flex
-                          onClick={handleCreateCourse}
+                          onClick={handleEditCourse}
                           cursor="pointer"
                           _hover={{
                             backgroundColor: "#FFF",
