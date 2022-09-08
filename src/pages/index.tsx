@@ -130,7 +130,7 @@ export default function Index() {
               align="center"
             >
               <Text color="#FFF" fontWeight="bold">
-                Criar meu curso
+                Adicionar curso novo
               </Text>
             </Flex>
           </Link>
